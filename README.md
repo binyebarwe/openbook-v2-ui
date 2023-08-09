@@ -1,1 +1,13 @@
-This is a starter template for [Learn Next.js](https://nextjs.org/learn).
+# OpenBook v2 UI 
+
+# Install
+
+```bash
+npm install
+```
+
+# Run
+
+```bash
+npm run dev
+```

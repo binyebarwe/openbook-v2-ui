@@ -6,8 +6,16 @@
     "start": "next start"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.28.1-beta.1",
+    "@solana/web3.js": "^1.73.2",
+    "encoding": "^0.1.13",
     "next": "latest",
+    "openbook-v2": "file:./../openbook-v2",
     "react": "18.2.0",
     "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.19",
+    "typescript": "5.1.6"
   }
 }

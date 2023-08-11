@@ -1,5 +1,4 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -14,9 +13,11 @@ import {
 import React from "react";
 import { fetchData } from "./openbook";
 
-export default function Home() {
-  const [selectedColor, setSelectedColor] = React.useState("default");
+import { LinkIcon } from "@heroicons/react/24/outline";
 
+export default function Home() {
+  const [page, setPage] = React.useState(1);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [markets, setMarkets] = useState([
     { market: "", baseMint: "", quoteMint: "", name: "" },
   ]);
@@ -50,39 +51,66 @@ export default function Home() {
       });
   }, []);
 
+  const hasMore = page < 9;
+
+  const linkedPk = (pk: string) => (
+    <div>
+      {pk}
+      <a
+        href={`https://solscan.io/account/${pk}`}
+        target="_blank"
+        className="pl-2"
+      >
+        <LinkIcon className="w-4 h-4 inline" />
+      </a>
+    </div>
+  );
+
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
-        <title>Create Next App</title>
+        <title>Openbook</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Table isStriped aria-label="All Markets">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={markets}>
-          {(item) => (
-            <TableRow key={item.market}>
-              {(columnKey) => (
-                <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+      <div className="w-full h-full relative">
+        <div className="flex flex-col gap-3 pb-2.5">
+          <Table
+            isStriped
+            selectionMode="single"
+            defaultSelectedKeys={["2"]}
+            aria-label="Markets"
+          >
+            <TableHeader columns={columns}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <br></br>
-      <footer>
-        <a
-          href="https://github.com/openbook-dex/openbook-v2"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by OPENBOOK Team
-        </a>
-      </footer>
+            </TableHeader>
+            <TableBody items={markets}>
+              {(item) => (
+                <TableRow key={item.market}>
+                  {(columnKey) => (
+                    <TableCell>
+                      {columnKey == "name"
+                        ? getKeyValue(item, columnKey)
+                        : linkedPk(getKeyValue(item, columnKey))}
+                    </TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <footer className="bottom-0 w-full h-2.5 absolute">
+          <a
+            href="https://github.com/openbook-dex/openbook-v2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Powered by OPENBOOK Team
+          </a>
+        </footer>
+      </div>
     </div>
   );
 }

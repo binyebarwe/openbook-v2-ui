@@ -9,11 +9,13 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/react";
+import { utf8 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 import React from "react";
-import { fetchData } from "./openbook";
+import { fetchData, getMarket } from "./openbook";
 
 import { LinkIcon } from "@heroicons/react/24/outline";
+import { MarketAccount, nameToString } from "openbook-v2";
 
 export default function Home() {
   const [page, setPage] = React.useState(1);
@@ -21,6 +23,7 @@ export default function Home() {
   const [markets, setMarkets] = useState([
     { market: "", baseMint: "", quoteMint: "", name: "" },
   ]);
+  const [market, setMarket] = useState({} as MarketAccount);
 
   const columns = [
     {
@@ -47,11 +50,16 @@ export default function Home() {
         setMarkets(res);
       })
       .catch((e) => {
-        console.log(e.message);
+        console.log(e);
       });
   }, []);
 
-  const hasMore = page < 9;
+  const fetchMarket = async (key: string) => {
+    const market = await getMarket(key);
+    setMarket(market);
+
+
+  };
 
   const linkedPk = (pk: string) => (
     <div>
@@ -78,8 +86,8 @@ export default function Home() {
           <Table
             isStriped
             selectionMode="single"
-            defaultSelectedKeys={["2"]}
             aria-label="Markets"
+            onRowAction={async (key) => fetchMarket(key.toString())}
           >
             <TableHeader columns={columns}>
               {(column) => (
@@ -101,6 +109,21 @@ export default function Home() {
             </TableBody>
           </Table>
         </div>
+        <div className="flex flex-col gap-3 pb-2.5">
+          <p>Name </p>
+          {market.asks ? nameToString(market.name) : ""}
+          <p>Base Mint </p>
+          {market.asks ? market.asks.toString() : ""}
+          <p>Quote Mint </p>
+          {market.asks ?  market.asks.toString() : ""}
+          <p>Bids </p>
+          {market.asks ? market.asks.toString() : ""}
+          <p>Asks </p>
+          {market.asks ? market.asks.toString() : ""}
+          <p>Event Queue </p>
+          {market.asks ? market.asks.toString() : ""}
+        </div>
+
         <footer className="bottom-0 w-full h-2.5 absolute">
           <a
             href="https://github.com/openbook-dex/openbook-v2"

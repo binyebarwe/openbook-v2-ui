@@ -15,7 +15,12 @@ import React from "react";
 import { fetchData, getBookSide, getMarket } from "../utils/openbook";
 
 import { LinkIcon } from "@heroicons/react/24/outline";
-import { MarketAccount, nameToString, LeafNode, AnyNode } from "@openbook-dex/openbook-v2";
+import {
+  MarketAccount,
+  nameToString,
+  LeafNode,
+  AnyNode,
+} from "@openbook-dex/openbook-v2";
 
 function keyForFixedPrice(key, priceData) {
   const upper = BigInt(priceData) << BigInt(64);
@@ -68,15 +73,16 @@ export default function Home() {
   const fetchMarket = async (key: string) => {
     const market = await getMarket(key);
     setMarket(market);
-    const bids = await getBookSide(market.bids);
-    const leafNodes: LeafNode[] = bids.nodes.nodes.filter(
-      (x: AnyNode) => x.tag == 2
-    );
-    for (let node of leafNodes) {
-      console.log(node.quantity, node.owner, node.key, priceData(node.key));
-    }
+    // const bids = await getBookSide(market.bids);
 
-    const asks = await getBookSide(market.asks);
+    // const asks = await getBookSide(market.asks);
+    // const leafNodes: LeafNode[] = asks.nodes.nodes.filter(
+    //   (x: AnyNode) => x.tag == 2
+    // );
+    // console.log(leafNodes[0].clientOrderId)
+    // for (let node of leafNodes) {
+    //   console.log('leafnode: ',node, node.ownerSlot, node.owner, node.key, priceData(node.key));
+    // }
   };
 
   const linkedPk = (pk: string) => (
@@ -130,8 +136,6 @@ export default function Home() {
 
         <div className="grid grid-cols-2 gap-2">
           <div className="">
-            <p>Market </p>
-
             <p>Name </p>
             {market.asks ? nameToString(market.name) : ""}
             <p>Base Mint </p>
@@ -147,11 +151,10 @@ export default function Home() {
           </div>
 
           <div className="">
-            <p>Additional Information </p>
             <p>Base Deposits </p>
-            {market.asks ? nameToString(market.name) : ""}
+            {market.asks ? market.baseDepositTotal.toString() : ""}
             <p>Quote Deposits </p>
-            {market.asks ? market.baseMint.toString() : ""}
+            {market.asks ? market.quoteDepositTotal.toString() : ""}
             <p>Taker Fees </p>
             {market.asks ? market.takerFee.toString() : ""}
             <p>Maker Fees </p>
@@ -168,7 +171,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div>{}</div>
+          <div>{market.asks ? market.baseDepositTotal.toString() : ""}</div>
 
           <div></div>
         </div>

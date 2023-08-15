@@ -1,17 +1,13 @@
-import { OpenBookV2Client, IDL, type OpenbookV2 } from "openbook-v2";
-import { useMemo } from "react";
-import { Connection, PublicKey, Cluster } from "@solana/web3.js";
-import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import { WalletAdapter } from "../pages/utils";
-
-const RPC = "http://127.0.0.1:8899";
-const programId = new PublicKey("8qkavBpvoHVYkmPhu6QRpXRX39Kcop9uMXvZorBAz43o");
+import { OpenBookV2Client } from "@openbook-dex/openbook-v2";
+import { Connection } from "@solana/web3.js";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { WalletAdapter } from "../utils/utils";
+import { RPC, programId } from "../utils/openbook";
 
 export function useOpenbookClient(): OpenBookV2Client {
   const provider = useProvider();
 
-  let program = new Program<OpenbookV2>(IDL, programId, provider);
-  let client = new OpenBookV2Client(program, programId, "devnet");
+  let client = new OpenBookV2Client(programId, provider);
   return client;
 }
 

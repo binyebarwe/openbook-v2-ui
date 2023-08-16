@@ -9,31 +9,28 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/react";
-import { utf8 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 import React from "react";
-import { fetchData, getBookSide, getMarket } from "../utils/openbook";
+import { fetchData, getMarket } from "../utils/openbook";
+import { BN } from "@coral-xyz/anchor";
 
 import { LinkIcon } from "@heroicons/react/24/outline";
-import {
-  MarketAccount,
-  nameToString,
-  LeafNode,
-  AnyNode,
-} from "@openbook-dex/openbook-v2";
+import { MarketAccount, nameToString } from "@openbook-dex/openbook-v2";
+import { useOpenbookClient } from "../hooks/useOpenbookClient";
 
-function keyForFixedPrice(key, priceData) {
-  const upper = BigInt(priceData) << BigInt(64);
-  const lower = BigInt(key) & BigInt("0xFFFFFFFFFFFFFFFF");
-  return upper | lower;
-}
+const openbookClient = useOpenbookClient();
+
 
 function priceData(key) {
-  return key >> 64;
+  const shiftedValue = key.shrn(64); // Shift right by 64 bits
+  return shiftedValue.toNumber(); // Convert BN to a regular number
 }
 
+
+
 export default function Home() {
-  const [page, setPage] = React.useState(1);
+  const [asks, setAsks] = useState([]);
+  const [bids, setBids] = useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [markets, setMarkets] = useState([
     { market: "", baseMint: "", quoteMint: "", name: "" },
@@ -59,6 +56,21 @@ export default function Home() {
     },
   ];
 
+  const columnsBook = [
+    {
+      key: "owner",
+      label: "OWNER",
+    },
+    {
+      key: "quantity",
+      label: "SIZE",
+    },
+    {
+      key: "key",
+      label: "PRICE",
+    },
+  ];
+
   useEffect(() => {
     fetchData()
       .then((res) => {
@@ -73,16 +85,12 @@ export default function Home() {
   const fetchMarket = async (key: string) => {
     const market = await getMarket(key);
     setMarket(market);
-    // const bids = await getBookSide(market.bids);
 
-    // const asks = await getBookSide(market.asks);
-    // const leafNodes: LeafNode[] = asks.nodes.nodes.filter(
-    //   (x: AnyNode) => x.tag == 2
-    // );
-    // console.log(leafNodes[0].clientOrderId)
-    // for (let node of leafNodes) {
-    //   console.log('leafnode: ',node, node.ownerSlot, node.owner, node.key, priceData(node.key));
-    // }
+    const booksideAsks = await openbookClient.getBookSide(market.asks);
+    const booksideBids = await openbookClient.getBookSide(market.bids);
+    if (booksideAsks === null || booksideBids === null) return;
+    setAsks(openbookClient.getLeafNodes(booksideAsks));
+    setBids(openbookClient.getLeafNodes(booksideBids));
   };
 
   const linkedPk = (pk: string) => (
@@ -170,10 +178,62 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <div>{market.asks ? market.baseDepositTotal.toString() : ""}</div>
+        <div>The Book</div>
 
-          <div></div>
+        <div className="grid grid-cols-2 gap-2">
+          <Table isStriped selectionMode="single" aria-label="OrderBook">
+            <TableHeader columns={columnsBook}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={asks}>
+              {(item) => (
+                <TableRow key={priceData(item.key)}>
+                  {(columnKey) => (
+                    <TableCell>
+                      {columnKey == "owner"
+                        ? getKeyValue(item, columnKey)
+                            .toString()
+                            .substring(0, 3) +
+                          ".." +
+                          getKeyValue(item, columnKey).toString().slice(-3)
+                        : columnKey == "quantity"
+                        ? getKeyValue(item, columnKey).toString()
+                        : priceData(getKeyValue(item, columnKey)).toString()}
+                    </TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          <Table isStriped selectionMode="single" aria-label="OrderBook">
+            <TableHeader columns={columnsBook}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={bids}>
+              {(item) => (
+                <TableRow key={priceData(item.key)}>
+                  {(columnKey) => (
+                    <TableCell>
+                      {columnKey == "owner"
+                        ? getKeyValue(item, columnKey)
+                            .toString()
+                            .substring(0, 3) +
+                          ".." +
+                          getKeyValue(item, columnKey).toString().slice(-3)
+                        : columnKey == "quantity"
+                        ? getKeyValue(item, columnKey).toString()
+                        : priceData(getKeyValue(item, columnKey)).toString()}
+                    </TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
 
         <footer className="bg-white rounded-lg shadow m-4 dark:bg-gray-800">

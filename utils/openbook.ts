@@ -2,6 +2,7 @@ import {
   findAllMarkets,
   MarketAccount,
   BookSideAccount,
+  OPENBOOK_PROGRAM_ID,
 } from "@openbook-dex/openbook-v2";
 import { PublicKey } from "@solana/web3.js";
 import {
@@ -12,21 +13,18 @@ import {
 
 // export const RPC = "http://127.0.0.1:8899";
 export const RPC = "https://mango.devnet.rpcpool.com/";
-export const programId = new PublicKey(
-  "opnbkNkqux64GppQhwbyEVc3axhssFhVYuwar8rDHCu"
-);
+
 let client = useOpenbookClient();
 
 export const fetchData = async () => {
   const connection = useConnection();
   const provider = useProvider();
-  let markets = await findAllMarkets(connection, programId, provider);
-
+  let markets = await findAllMarkets(connection, OPENBOOK_PROGRAM_ID, provider);
   return markets;
 };
 
 export const getMarket = async (publicKey: string): Promise<MarketAccount> => {
-  let market = await client.getMarket(new PublicKey(publicKey));
+  let market = await client.getMarketAccount(new PublicKey(publicKey));
   return market ? market : ({} as MarketAccount);
 };
 

@@ -2,13 +2,13 @@ import { OpenBookV2Client } from "@openbook-dex/openbook-v2";
 import { Connection, Keypair } from "@solana/web3.js";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { WalletAdapter } from "../utils/utils";
-import { RPC, programId } from "../utils/openbook";
+import { RPC } from "../utils/openbook";
 import EmptyWallet from "./emptyWallet";
 
 export function useOpenbookClient(): OpenBookV2Client {
   const provider = useProvider();
 
-  let client = new OpenBookV2Client(programId, provider);
+  let client = new OpenBookV2Client(provider);
   return client;
 }
 

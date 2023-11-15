@@ -154,8 +154,8 @@ export default function Home() {
             {market.asks ? market.bids.toString() : ""}
             <p>Asks </p>
             {market.asks ? market.asks.toString() : ""}
-            <p>Event Queue </p>
-            {market.asks ? market.eventQueue.toString() : ""}
+            <p>Event Heap </p>
+            {market.asks ? market.eventHeap.toString() : ""}
           </div>
 
           <div className="">

@@ -11,8 +11,7 @@ import {
   useProvider,
 } from "../hooks/useOpenbookClient";
 
-// export const RPC = "http://127.0.0.1:8899";
-export const RPC = "https://mango.devnet.rpcpool.com/";
+export const RPC = "https://misty-wcb8ol-fast-mainnet.helius-rpc.com/";
 
 let client = useOpenbookClient();
 

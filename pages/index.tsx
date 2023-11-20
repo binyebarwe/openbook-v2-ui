@@ -113,7 +113,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative ">
         <div className="flex flex-col gap-3 pb-2.5">
           <Table
             isStriped
@@ -142,47 +142,47 @@ export default function Home() {
           </Table>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 text-center border-r-4 border-b-4 border-l-4">
           <div className="">
-            <p>Name </p>
+            <p className="font-bold">Name </p>
             {market.asks ? nameToString(market.name) : ""}
-            <p>Base Mint </p>
+            <p className="font-bold">Base Mint </p>
             {market.asks ? market.baseMint.toString() : ""}
-            <p>Quote Mint </p>
+            <p className="font-bold">Quote Mint </p>
             {market.asks ? market.quoteMint.toString() : ""}
-            <p>Bids </p>
+            <p className="font-bold">Bids </p>
             {market.asks ? market.bids.toString() : ""}
-            <p>Asks </p>
+            <p className="font-bold">Asks </p>
             {market.asks ? market.asks.toString() : ""}
-            <p>Event Heap </p>
+            <p className="font-bold">Event Heap </p>
             {market.asks ? market.eventHeap.toString() : ""}
           </div>
 
           <div className="">
-            <p>Base Deposits </p>
+            <p className="font-bold">Base Deposits </p>
             {market.asks ? market.baseDepositTotal.toString() : ""}
-            <p>Quote Deposits </p>
+            <p className="font-bold">Quote Deposits </p>
             {market.asks ? market.quoteDepositTotal.toString() : ""}
-            <p>Taker Fees </p>
+            <p className="font-bold">Taker Fees </p>
             {market.asks ? market.takerFee.toString() : ""}
-            <p>Maker Fees </p>
+            <p className="font-bold">Maker Fees </p>
             {market.asks ? market.makerFee.toString() : ""}
-            <p>Base Lot Size </p>
+            <p className="font-bold">Base Lot Size </p>
             {market.asks ? market.baseLotSize.toString() : ""}
-            <p>Quote Lot Size </p>
+            <p className="font-bold">Quote Lot Size </p>
             {market.asks ? market.quoteLotSize.toString() : ""}
-            <p>Base Decimals </p>
+            <p className="font-bold">Base Decimals </p>
             {market.asks ? market.baseDecimals : ""}
-            <p>Quote Decimals </p>
+            <p className="font-bold">Quote Decimals </p>
             {market.asks ? market.quoteDecimals : ""}
           </div>
         </div>
 
-        <div>The Book</div>
+        <div><h3 className="text-center mt-8 mb-5 text-xl">ASKS   --------   The Book   --------   BIDS</h3></div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 border-2">
           <Table isStriped selectionMode="single" aria-label="OrderBook">
-            <TableHeader columns={columnsBook}>
+            <TableHeader className="text-left" columns={columnsBook}>
               {(column) => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
@@ -195,9 +195,9 @@ export default function Home() {
                       {columnKey == "owner"
                         ? getKeyValue(item, columnKey)
                             .toString()
-                            .substring(0, 3) +
+                            .substring(0, 4) +
                           ".." +
-                          getKeyValue(item, columnKey).toString().slice(-3)
+                          getKeyValue(item, columnKey).toString().slice(-4)
                         : columnKey == "quantity"
                         ? getKeyValue(item, columnKey).toString()
                         : priceData(getKeyValue(item, columnKey)).toString()}
@@ -222,9 +222,9 @@ export default function Home() {
                       {columnKey == "owner"
                         ? getKeyValue(item, columnKey)
                             .toString()
-                            .substring(0, 3) +
+                            .substring(0, 4) +
                           ".." +
-                          getKeyValue(item, columnKey).toString().slice(-3)
+                          getKeyValue(item, columnKey).toString().slice(-4)
                         : columnKey == "quantity"
                         ? getKeyValue(item, columnKey).toString()
                         : priceData(getKeyValue(item, columnKey)).toString()}
@@ -240,24 +240,24 @@ export default function Home() {
           <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
             <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
               © 2023{" "}
-              <a href="https://flowbite.com/" className="hover:underline">
+              <a href="https://twitter.com/openbookdex" className="hover:underline">
                 Openbook Team
               </a>
               . All Rights Reserved.
             </span>
             <ul className="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
               <li>
-                <a href="#" className="mr-4 hover:underline md:mr-6">
+                <a href="https://twitter.com/openbookdex" className="mr-4 hover:underline md:mr-6">
                   Twitter
                 </a>
               </li>
               <li>
-                <a href="#" className="mr-4 hover:underline md:mr-6">
+                <a href="https://github.com/openbook-dex" className="mr-4 hover:underline md:mr-6">
                   GitHub
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:underline">
+                <a href="gofuckyourselfifyouwanttocontactus@weloveyou.shit" className="hover:underline">
                   Contact
                 </a>
               </li>

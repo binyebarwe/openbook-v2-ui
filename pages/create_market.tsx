@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useOpenbookClient } from "../hooks/useOpenbookClient";
+// import { useOpenbookClient } from "../hooks/useOpenbookClient";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import { OracleConfigParams } from "@openbook-dex/openbook-v2";
 
-const openbookClient = useOpenbookClient();
+// const openbookClient = useOpenbookClient();
 
 const CreateMarket = () => {
   const [name, setName] = useState("");
@@ -22,38 +22,35 @@ const CreateMarket = () => {
     PublicKey.default
   );
   const [closeMarketAdmin, setCloseMarketAdmin] = useState(PublicKey.default);
-  const [confFilter, setConfFilter] = useState(0.1);
-  const [maxStalenessSlots, setMaxStalenessSlots] = useState(100);
-  const [oracleConfigParams, setOracleConfigParams] = useState(100);
+  const [confFilter, setConfFilter] = useState("0.1");
+  const [maxStalenessSlots, setMaxStalenessSlots] = useState("100");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const oracleConfigParams: OracleConfigParams = {
-      confFilter,
-      maxStalenessSlots,
+      confFilter: Number(confFilter),
+      maxStalenessSlots: Number(maxStalenessSlots),
     };
     try {
-      const result = openbookClient.createMarket(
-        // TODO connect wallet
-        Keypair.generate(),
-        name,
-        quoteMint,
-        baseMint,
-        new BN(quoteLotSize),
-        new BN(baseLotSize),
-        new BN(makerFee),
-        new BN(takerFee),
-        new BN(timeExpiry),
-        oracleA,
-        oracleB,
-        openOrdersAdmin,
-        consumeEventsAdmin,
-        closeMarketAdmin,
-        oracleConfigParams
-      );
-
-      // Handle the result or redirect to another page
+      // const result = openbookClient.createMarket(
+      //   // TODO connect wallet
+      //   Keypair.generate(),
+      //   name,
+      //   quoteMint,
+      //   baseMint,
+      //   new BN(quoteLotSize),
+      //   new BN(baseLotSize),
+      //   new BN(makerFee),
+      //   new BN(takerFee),
+      //   new BN(timeExpiry),
+      //   oracleA,
+      //   oracleB,
+      //   openOrdersAdmin,
+      //   consumeEventsAdmin,
+      //   closeMarketAdmin,
+      //   oracleConfigParams
+      // );
     } catch (error) {
       console.log("Error on the form", error);
       // Handle errors
@@ -61,15 +58,6 @@ const CreateMarket = () => {
   };
 
   return (
-    //   <div className='p-8 justify-center items-center h-screen'>
-    //   <form className='flex'>
-    //     <input className='bg-gray-200 shadow-inner text-black rounded-l p-2' id='email' type='email' aria-label='email address' placeholder='Enter your email address' value={input} onChange={e => setInput(e.target.value)} />
-    //     <button className='bg-blue-600 hover:bg-blue-700 duration-300 text-white shadow p-2 rounded-r' type='submit' onClick={subscribe}>
-    //       Sign Up
-    //     </button>
-    //   </form>
-    // </div>
-
     <form>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-12">
@@ -95,7 +83,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setName(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md py-1.5 pl-2 pl-2 text-black font-bold shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -111,7 +99,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setQuoteMint(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md  py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md  py-1.5 pl-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -127,7 +115,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setBaseMint(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -143,7 +131,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setQuoteLotSize(e.target.value)}
-                  className="block w-full rounded-md  py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md  py-1.5 pl-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -159,7 +147,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setBaseLotSize(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -175,7 +163,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setMakerFee(e.target.value)}
-                  className="block w-full rounded-md  py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md  py-1.5 pl-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -191,7 +179,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setTakerFee(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -207,11 +195,10 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setTimeExpiry(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
-
 
             <div className="sm:col-span-3">
               <label
@@ -224,7 +211,7 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setOracleA(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md  py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md  py-1.5 pl-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -240,7 +227,39 @@ const CreateMarket = () => {
                 <input
                   type="text"
                   onChange={(e) => setOracleB(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label
+                htmlFor="quote-mint"
+                className="block text-sm font-medium leading-6 text-white-900"
+              >
+                Max Staleness Slots (Optional)
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  onChange={(e) => setMaxStalenessSlots(e.target.value)}
+                  className="block w-full rounded-md  py-1.5 pl-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label
+                htmlFor="last-name"
+                className="block text-sm font-medium leading-6 text-white-900"
+              >
+                Oracle B (Optional)
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  onChange={(e) => setOracleB(new PublicKey(e.target.value))}
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -255,8 +274,10 @@ const CreateMarket = () => {
               <div className="mt-2">
                 <input
                   type="text"
-                  onChange={(e) => setOpenOrdersAdmin(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md  py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  onChange={(e) =>
+                    setOpenOrdersAdmin(new PublicKey(e.target.value))
+                  }
+                  className="block w-full rounded-md  py-1.5 pl-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-black-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -271,8 +292,10 @@ const CreateMarket = () => {
               <div className="mt-2">
                 <input
                   type="text"
-                  onChange={(e) => setConsumeEventsAdmin(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  onChange={(e) =>
+                    setConsumeEventsAdmin(new PublicKey(e.target.value))
+                  }
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -287,13 +310,13 @@ const CreateMarket = () => {
               <div className="mt-2">
                 <input
                   type="text"
-                  onChange={(e) => setCloseMarketAdmin(new PublicKey(e.target.value))}
-                  className="block w-full rounded-md border-0 py-1.5  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  onChange={(e) =>
+                    setCloseMarketAdmin(new PublicKey(e.target.value))
+                  }
+                  className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
-
-
           </div>
         </div>
       </div>

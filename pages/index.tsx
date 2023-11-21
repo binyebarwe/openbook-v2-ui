@@ -20,13 +20,10 @@ import { useOpenbookClient } from "../hooks/useOpenbookClient";
 
 const openbookClient = useOpenbookClient();
 
-
 function priceData(key) {
   const shiftedValue = key.shrn(64); // Shift right by 64 bits
   return shiftedValue.toNumber(); // Convert BN to a regular number
 }
-
-
 
 export default function Home() {
   const [asks, setAsks] = useState([]);
@@ -89,8 +86,18 @@ export default function Home() {
     const booksideAsks = await openbookClient.getBookSide(market.asks);
     const booksideBids = await openbookClient.getBookSide(market.bids);
     if (booksideAsks === null || booksideBids === null) return;
-    setAsks(openbookClient.getLeafNodes(booksideAsks));
-    setBids(openbookClient.getLeafNodes(booksideBids));
+    const asks = openbookClient.getLeafNodes(booksideAsks).sort((a, b) => {
+      const priceA = priceData(a.key);
+      const priceB = priceData(b.key);
+      return priceB - priceA;
+    });
+    setAsks(asks);
+    const bids = openbookClient.getLeafNodes(booksideBids).sort((a, b) => {
+      const priceA = priceData(a.key);
+      const priceB = priceData(b.key);
+      return priceB - priceA;
+    });
+    setBids(bids);
   };
 
   const linkedPk = (pk: string) => (
@@ -178,7 +185,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div><h3 className="text-center mt-8 mb-5 text-xl">ASKS   --------   The Book   --------   BIDS</h3></div>
+        <div>
+          <h3 className="text-center mt-8 mb-5 text-xl">
+            ASKS -------- The Book -------- BIDS
+          </h3>
+        </div>
 
         <div className="grid grid-cols-2 gap-2 border-2">
           <Table isStriped selectionMode="single" aria-label="OrderBook">
@@ -200,7 +211,7 @@ export default function Home() {
                           getKeyValue(item, columnKey).toString().slice(-4)
                         : columnKey == "quantity"
                         ? getKeyValue(item, columnKey).toString()
-                        : priceData(getKeyValue(item, columnKey)).toString()}
+                        : priceData(item.key)}
                     </TableCell>
                   )}
                 </TableRow>
@@ -227,7 +238,7 @@ export default function Home() {
                           getKeyValue(item, columnKey).toString().slice(-4)
                         : columnKey == "quantity"
                         ? getKeyValue(item, columnKey).toString()
-                        : priceData(getKeyValue(item, columnKey)).toString()}
+                        : priceData(item.key)}
                     </TableCell>
                   )}
                 </TableRow>
@@ -240,24 +251,36 @@ export default function Home() {
           <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
             <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
               © 2023{" "}
-              <a href="https://twitter.com/openbookdex" className="hover:underline">
+              <a
+                href="https://twitter.com/openbookdex"
+                className="hover:underline"
+              >
                 Openbook Team
               </a>
               . All Rights Reserved.
             </span>
             <ul className="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
               <li>
-                <a href="https://twitter.com/openbookdex" className="mr-4 hover:underline md:mr-6">
+                <a
+                  href="https://twitter.com/openbookdex"
+                  className="mr-4 hover:underline md:mr-6"
+                >
                   Twitter
                 </a>
               </li>
               <li>
-                <a href="https://github.com/openbook-dex" className="mr-4 hover:underline md:mr-6">
+                <a
+                  href="https://github.com/openbook-dex"
+                  className="mr-4 hover:underline md:mr-6"
+                >
                   GitHub
                 </a>
               </li>
               <li>
-                <a href="gofuckyourselfifyouwanttocontactus@weloveyou.shit" className="hover:underline">
+                <a
+                  href="gofuckyourselfifyouwanttocontactus@weloveyou.shit"
+                  className="hover:underline"
+                >
                   Contact
                 </a>
               </li>

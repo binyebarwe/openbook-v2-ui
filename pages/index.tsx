@@ -17,6 +17,7 @@ import { BN } from "@coral-xyz/anchor";
 import { LinkIcon } from "@heroicons/react/24/outline";
 import { MarketAccount, nameToString } from "@openbook-dex/openbook-v2";
 import { useOpenbookClient } from "../hooks/useOpenbookClient";
+import { PublicKey } from "@solana/web3.js";
 
 const openbookClient = useOpenbookClient();
 
@@ -33,6 +34,7 @@ export default function Home() {
     { market: "", baseMint: "", quoteMint: "", name: "" },
   ]);
   const [market, setMarket] = useState({} as MarketAccount);
+  const [marketPubkey, setMarketPubkey] = useState(PublicKey.default);
 
   const columns = [
     {
@@ -73,6 +75,7 @@ export default function Home() {
       .then((res) => {
         setMarkets(res);
         fetchMarket(res[0].market);
+        setMarketPubkey(new PublicKey(res[0].market));
       })
       .catch((e) => {
         console.log(e);
@@ -82,6 +85,7 @@ export default function Home() {
   const fetchMarket = async (key: string) => {
     const market = await getMarket(key);
     setMarket(market);
+    setMarketPubkey(new PublicKey(key));
 
     const booksideAsks = await openbookClient.getBookSide(market.asks);
     const booksideBids = await openbookClient.getBookSide(market.bids);
@@ -112,6 +116,20 @@ export default function Home() {
       </a>
     </div>
   );
+
+  const crankMarket = async () => {
+    let accountsToConsume = await openbookClient.getAccountsToConsume(market);
+    console.log("accountsToConsume", accountsToConsume);
+
+    if (accountsToConsume.length > 0) {
+      await openbookClient.consumeEvents(
+        marketPubkey,
+        market,
+        new BN(5),
+        accountsToConsume
+      );
+    }
+  };
 
   return (
     <div>
@@ -185,6 +203,12 @@ export default function Home() {
           </div>
         </div>
 
+        <button
+          className="items-center text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={(e: any) => crankMarket()}
+        >
+          CRANK
+        </button>
         <div>
           <h3 className="text-center mt-8 mb-5 text-xl">
             ASKS -------- The Book -------- BIDS

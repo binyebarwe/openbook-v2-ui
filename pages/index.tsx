@@ -18,6 +18,9 @@ import { LinkIcon } from "@heroicons/react/24/outline";
 import { MarketAccount, nameToString } from "@openbook-dex/openbook-v2";
 import { useOpenbookClient } from "../hooks/useOpenbookClient";
 import { PublicKey } from "@solana/web3.js";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { ButtonState } from "../components/Button";
+import { toast } from "react-hot-toast";
 
 const openbookClient = useOpenbookClient();
 
@@ -27,6 +30,7 @@ function priceData(key) {
 }
 
 export default function Home() {
+  const { publicKey, signTransaction, connected } = useWallet();
   const [asks, setAsks] = useState([]);
   const [bids, setBids] = useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -35,6 +39,7 @@ export default function Home() {
   ]);
   const [market, setMarket] = useState({} as MarketAccount);
   const [marketPubkey, setMarketPubkey] = useState(PublicKey.default);
+  const [txState, setTxState] = React.useState<ButtonState>("initial");
 
   const columns = [
     {
@@ -130,6 +135,90 @@ export default function Home() {
       );
     }
   };
+
+  const onTxClick =
+    ({
+      isToken = false,
+      address,
+      amount,
+    }: {
+      isToken: boolean;
+      address?: string;
+      amount?: string;
+    }) =>
+    async () => {
+      if (connected && publicKey && signTransaction && txState !== "loading") {
+        setTxState("loading");
+        const buttonToastId = toast.loading("Creating transaction...", {
+          id: `buttonToast${isToken ? "Token" : ""}`,
+        });
+
+        try {
+          // Request signature from wallet
+          const signedTx = await signTransaction(tx);
+          const signedTxBase64 = signedTx.serialize().toString("base64");
+
+          // Send signed transaction
+          let txSendResponse = await fetch("/api/tx/send", {
+            method: "POST",
+            body: JSON.stringify({ signedTx: signedTxBase64 }),
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+          });
+
+          if (txSendResponse.status === 200) {
+            setTxState("success");
+            const sendData: TxSendData = await txSendResponse.json();
+            if (sendData.txSignature !== null) {
+              toast.success(
+                (t) => (
+                  <a
+                    href={`https://solscan.io/tx/${sendData.txSignature}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Transaction created
+                  </a>
+                ),
+                { id: buttonToastId, duration: 10000 }
+              );
+
+              const confirmationToastId = toast.loading(
+                "Confirming transaction..."
+              );
+
+              const confirmationResponse = await fetch("/api/tx/confirm", {
+                method: "POST",
+                body: JSON.stringify({ txSignature: sendData.txSignature }),
+                headers: {
+                  "Content-type": "application/json; charset=UTF-8",
+                },
+              });
+
+              const confirmationData: TxConfirmData =
+                await confirmationResponse.json();
+
+              if (confirmationData.confirmed) {
+                toast.success("Transaction confirmed", {
+                  id: confirmationToastId,
+                });
+              } else {
+                toast.success("Error confirming transaction", {
+                  id: confirmationToastId,
+                });
+              }
+            }
+          } else {
+            setTxState("error");
+            toast.error("Error creating transaction", {
+              id: buttonToastId,
+            });
+          }
+        } catch (error: any) {
+          setTxState("error");
+          toast.error("Error creating transaction", { id: buttonToastId });
+        }
+      }
+    };
 
   return (
     <div>

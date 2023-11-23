@@ -13,7 +13,8 @@ export function useOpenbookClient(): OpenBookV2Client {
 }
 
 export function useConnection(): Connection {
-  return new Connection(RPC);
+  const connection = new Connection(RPC);
+  return connection;
 }
 
 export function useProvider(): AnchorProvider {

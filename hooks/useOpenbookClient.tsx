@@ -4,6 +4,7 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { WalletAdapter } from "../utils/utils";
 import { RPC } from "../utils/openbook";
 import EmptyWallet from "./emptyWallet";
+import { useProvider } from "./useProvider";
 
 export function useOpenbookClient(): OpenBookV2Client {
   const provider = useProvider();
@@ -12,12 +13,13 @@ export function useOpenbookClient(): OpenBookV2Client {
   return client;
 }
 
+
 export function useConnection(): Connection {
   const connection = new Connection(RPC);
   return connection;
 }
 
-export function useProvider(): AnchorProvider {
+export function useFakeProvider(): AnchorProvider {
   return new AnchorProvider(
     useConnection(),
     new EmptyWallet(Keypair.generate()),

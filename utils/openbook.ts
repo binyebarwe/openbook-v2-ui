@@ -8,16 +8,17 @@ import { PublicKey } from "@solana/web3.js";
 import {
   useOpenbookClient,
   useConnection,
-  useProvider,
+  useFakeProvider,
 } from "../hooks/useOpenbookClient";
 
-export const RPC = "https://misty-wcb8ol-fast-mainnet.helius-rpc.com/";
+export const RPC =
+  "https://misty-wcb8ol-fast-mainnet.helius-rpc.com/";
 
 let client = useOpenbookClient();
 
 export const fetchData = async () => {
   const connection = useConnection();
-  const provider = useProvider();
+  const provider = useFakeProvider();
   let markets = await findAllMarkets(connection, OPENBOOK_PROGRAM_ID, provider);
   return markets;
 };

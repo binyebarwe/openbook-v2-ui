@@ -1,10 +1,9 @@
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useMemo } from "react";
-import { useConnection } from "./useOpenbookClient";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 export function useProvider() {
-  const connection = useConnection();
+  const { connection } = useConnection();
   const wallet = useWallet();
 
   const provider = useMemo(

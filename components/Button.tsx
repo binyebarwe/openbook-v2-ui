@@ -1,6 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import React, { ReactNode } from "react";
 
+
 export type ButtonState = "initial" | "loading" | "success" | "error";
 
 type Props = {

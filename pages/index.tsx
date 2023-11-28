@@ -22,8 +22,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { ButtonState } from "../components/Button";
 import { toast } from "react-hot-toast";
 
-const openbookClient = useOpenbookClient();
-
 function priceData(key) {
   const shiftedValue = key.shrn(64); // Shift right by 64 bits
   return shiftedValue.toNumber(); // Convert BN to a regular number
@@ -75,6 +73,8 @@ export default function Home() {
     },
   ];
 
+  const openbookClient = useOpenbookClient();
+
   useEffect(() => {
     fetchData()
       .then((res) => {
@@ -88,7 +88,7 @@ export default function Home() {
   }, []);
 
   const fetchMarket = async (key: string) => {
-    const market = await getMarket(key);
+    const market = await getMarket(openbookClient, key);
     setMarket(market);
     setMarketPubkey(new PublicKey(key));
 
@@ -127,12 +127,13 @@ export default function Home() {
     console.log("accountsToConsume", accountsToConsume);
 
     if (accountsToConsume.length > 0) {
-      await openbookClient.consumeEvents(
+      const tx = await openbookClient.consumeEvents(
         marketPubkey,
         market,
         new BN(5),
         accountsToConsume
       );
+      console.log("consume events", tx);
     }
   };
 

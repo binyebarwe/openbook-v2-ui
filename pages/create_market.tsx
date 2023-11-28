@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import { OracleConfigParams } from "@openbook-dex/openbook-v2";
-
-// const openbookClient = useOpenbookClient();
+import { useOpenbookClient } from "../hooks/useOpenbookClient";
 
 const CreateMarket = () => {
   const [name, setName] = useState("");
@@ -25,6 +24,8 @@ const CreateMarket = () => {
   const [confFilter, setConfFilter] = useState("0.1");
   const [maxStalenessSlots, setMaxStalenessSlots] = useState("100");
 
+  const openbookClient = useOpenbookClient();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -33,24 +34,24 @@ const CreateMarket = () => {
       maxStalenessSlots: Number(maxStalenessSlots),
     };
     try {
-      // const result = openbookClient.createMarket(
-      //   // TODO connect wallet
-      //   Keypair.generate(),
-      //   name,
-      //   quoteMint,
-      //   baseMint,
-      //   new BN(quoteLotSize),
-      //   new BN(baseLotSize),
-      //   new BN(makerFee),
-      //   new BN(takerFee),
-      //   new BN(timeExpiry),
-      //   oracleA,
-      //   oracleB,
-      //   openOrdersAdmin,
-      //   consumeEventsAdmin,
-      //   closeMarketAdmin,
-      //   oracleConfigParams
-      // );
+      const result = openbookClient.createMarket(
+        // TODO connect wallet
+        Keypair.generate(),
+        name,
+        quoteMint,
+        baseMint,
+        new BN(quoteLotSize),
+        new BN(baseLotSize),
+        new BN(makerFee),
+        new BN(takerFee),
+        new BN(timeExpiry),
+        oracleA,
+        oracleB,
+        openOrdersAdmin,
+        consumeEventsAdmin,
+        closeMarketAdmin,
+        oracleConfigParams
+      );
     } catch (error) {
       console.log("Error on the form", error);
       // Handle errors
@@ -324,6 +325,7 @@ const CreateMarket = () => {
       <div className="mt-6 items-center">
         <button
           type="submit"
+          onClick={(e: any) => handleSubmit(e)}
           className="rounded-md bg-indigo-600 px-3 py-2 text-xl font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           Create Market

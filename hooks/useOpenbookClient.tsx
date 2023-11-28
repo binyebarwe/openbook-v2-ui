@@ -14,14 +14,14 @@ export function useOpenbookClient(): OpenBookV2Client {
 }
 
 
-export function useConnection(): Connection {
+export function useHookConnection(): Connection {
   const connection = new Connection(RPC);
   return connection;
 }
 
 export function useFakeProvider(): AnchorProvider {
   return new AnchorProvider(
-    useConnection(),
+    useHookConnection(),
     new EmptyWallet(Keypair.generate()),
     {
       /** disable transaction verification step */

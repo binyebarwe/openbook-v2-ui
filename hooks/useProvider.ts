@@ -4,13 +4,13 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useFakeProvider } from "./useOpenbookClient";
 
 export function useProvider() {
-  // const { connection } = useConnection();
-  // const wallet = useWallet();
+  const { connection } = useConnection();
+  const wallet = useWallet();
 
-  // const provider = useMemo(
-  //   () => new AnchorProvider(connection, wallet as any, {}),
-  //   [connection, wallet]
-  // );
+  const provider = useMemo(
+    () => new AnchorProvider(connection, wallet as any, {}),
+    [connection, wallet]
+  );
 
-  return useFakeProvider();
+  return provider;
 }

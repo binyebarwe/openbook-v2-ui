@@ -17,11 +17,11 @@ export function Button({ state, onClick, children, className }: Props) {
     return null;
   }
 
-  const buttonClasses = classNames("btn", className);
+  className = `${className} underline underline-offset-4`;
 
   return (
     <button
-      className={buttonClasses}
+      className={className}
       onClick={onClick}
       disabled={state === "loading"}
     >

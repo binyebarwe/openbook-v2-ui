@@ -15,7 +15,11 @@ import { fetchData, getMarket } from "../utils/openbook";
 import { BN } from "@coral-xyz/anchor";
 
 import { LinkIcon } from "@heroicons/react/24/outline";
-import { MarketAccount, nameToString } from "@openbook-dex/openbook-v2";
+import {
+  MarketAccount,
+  nameToString,
+  priceLotsToUi,
+} from "@openbook-dex/openbook-v2";
 import { useOpenbookClient } from "../hooks/useOpenbookClient";
 import { PublicKey } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -86,6 +90,13 @@ export default function Home() {
         console.log(e);
       });
   }, []);
+
+  function priceDataToUI(key) {
+    const shiftedValue = key.shrn(64); // Shift right by 64 bits
+    const priceLots = shiftedValue.toNumber(); // Convert BN to a regular number
+
+    return priceLotsToUi(market, priceLots);
+  }
 
   const fetchMarket = async (key: string) => {
     const market = await getMarket(openbookClient, key);
@@ -325,7 +336,7 @@ export default function Home() {
                           getKeyValue(item, columnKey).toString().slice(-4)
                         : columnKey == "quantity"
                         ? getKeyValue(item, columnKey).toString()
-                        : priceData(item.key)}
+                        : priceDataToUI(item.key)}
                     </TableCell>
                   )}
                 </TableRow>
@@ -352,7 +363,7 @@ export default function Home() {
                           getKeyValue(item, columnKey).toString().slice(-4)
                         : columnKey == "quantity"
                         ? getKeyValue(item, columnKey).toString()
-                        : priceData(item.key)}
+                        : priceDataToUI(item.key)}
                     </TableCell>
                   )}
                 </TableRow>

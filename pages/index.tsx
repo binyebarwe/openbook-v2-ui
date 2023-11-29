@@ -32,7 +32,7 @@ function priceData(key) {
 }
 
 export default function Home() {
-  const { publicKey, signTransaction, connected } = useWallet();
+  const { publicKey, signTransaction, connected, wallet } = useWallet();
   const [asks, setAsks] = useState([]);
   const [bids, setBids] = useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -144,7 +144,8 @@ export default function Home() {
         new BN(5),
         accountsToConsume
       );
-      console.log("consume events", tx);
+      console.log("consume events tx", tx);
+      toast("Consume events tx: " + tx.toString());
     }
   };
 
@@ -184,109 +185,116 @@ export default function Home() {
           </Table>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-center border-r-4 border-b-4 border-l-4">
-          <div className="">
-            <p className="font-bold">Name </p>
-            {market.asks ? nameToString(market.name) : ""}
-            <p className="font-bold">Base Mint </p>
-            {market.asks ? market.baseMint.toString() : ""}
-            <p className="font-bold">Quote Mint </p>
-            {market.asks ? market.quoteMint.toString() : ""}
-            <p className="font-bold">Bids </p>
-            {market.asks ? market.bids.toString() : ""}
-            <p className="font-bold">Asks </p>
-            {market.asks ? market.asks.toString() : ""}
-            <p className="font-bold">Event Heap </p>
-            {market.asks ? market.eventHeap.toString() : ""}
-          </div>
+        {market.asks ? (
+          <div>
+            <div className="grid grid-cols-2 gap-2 text-center border-r-4 border-b-4 border-l-4">
+              <div className="">
+                <p className="font-bold">Name </p>
+                {market.asks ? nameToString(market.name) : ""}
+                <p className="font-bold">Base Mint </p>
+                {market.asks ? market.baseMint.toString() : ""}
+                <p className="font-bold">Quote Mint </p>
+                {market.asks ? market.quoteMint.toString() : ""}
+                <p className="font-bold">Bids </p>
+                {market.asks ? market.bids.toString() : ""}
+                <p className="font-bold">Asks </p>
+                {market.asks ? market.asks.toString() : ""}
+                <p className="font-bold">Event Heap </p>
+                {market.asks ? market.eventHeap.toString() : ""}
+              </div>
 
-          <div className="">
-            <p className="font-bold">Base Deposits </p>
-            {market.asks ? market.baseDepositTotal.toString() : ""}
-            <p className="font-bold">Quote Deposits </p>
-            {market.asks ? market.quoteDepositTotal.toString() : ""}
-            <p className="font-bold">Taker Fees </p>
-            {market.asks ? market.takerFee.toString() : ""}
-            <p className="font-bold">Maker Fees </p>
-            {market.asks ? market.makerFee.toString() : ""}
-            <p className="font-bold">Base Lot Size </p>
-            {market.asks ? market.baseLotSize.toString() : ""}
-            <p className="font-bold">Quote Lot Size </p>
-            {market.asks ? market.quoteLotSize.toString() : ""}
-            <p className="font-bold">Base Decimals </p>
-            {market.asks ? market.baseDecimals : ""}
-            <p className="font-bold">Quote Decimals </p>
-            {market.asks ? market.quoteDecimals : ""}
-          </div>
-        </div>
+              <div className="">
+                <p className="font-bold">Base Deposits </p>
+                {market.asks ? market.baseDepositTotal.toString() : ""}
+                <p className="font-bold">Quote Deposits </p>
+                {market.asks ? market.quoteDepositTotal.toString() : ""}
+                <p className="font-bold">Taker Fees </p>
+                {market.asks ? market.takerFee.toString() : ""}
+                <p className="font-bold">Maker Fees </p>
+                {market.asks ? market.makerFee.toString() : ""}
+                <p className="font-bold">Base Lot Size </p>
+                {market.asks ? market.baseLotSize.toString() : ""}
+                <p className="font-bold">Quote Lot Size </p>
+                {market.asks ? market.quoteLotSize.toString() : ""}
+                <p className="font-bold">Base Decimals </p>
+                {market.asks ? market.baseDecimals : ""}
+                <p className="font-bold">Quote Decimals </p>
+                {market.asks ? market.quoteDecimals : ""}
+              </div>
+            </div>
 
-        <button
-          className="items-center text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={(e: any) => crankMarket()}
-        >
-          CRANK
-        </button>
-        <div>
-          <h3 className="text-center mt-8 mb-5 text-xl">
-            ASKS -------- The Book -------- BIDS
-          </h3>
-        </div>
+            <button
+              className="items-center text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={(e: any) => crankMarket()}
+            >
+              CRANK
+            </button>
 
-        <div className="grid grid-cols-2 gap-2 border-2">
-          <Table isStriped selectionMode="single" aria-label="OrderBook">
-            <TableHeader className="text-left" columns={columnsBook}>
-              {(column) => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              )}
-            </TableHeader>
-            <TableBody items={asks}>
-              {(item) => (
-                <TableRow key={priceData(item.key)}>
-                  {(columnKey) => (
-                    <TableCell>
-                      {columnKey == "owner"
-                        ? getKeyValue(item, columnKey)
-                            .toString()
-                            .substring(0, 4) +
-                          ".." +
-                          getKeyValue(item, columnKey).toString().slice(-4)
-                        : columnKey == "quantity"
-                        ? getKeyValue(item, columnKey).toString()
-                        : priceDataToUI(item.key)}
-                    </TableCell>
+            <div>
+              <h3 className="text-center mt-8 mb-5 text-xl">
+                ASKS -------- The Book -------- BIDS
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 border-2">
+              <Table isStriped selectionMode="single" aria-label="OrderBook">
+                <TableHeader className="text-left" columns={columnsBook}>
+                  {(column) => (
+                    <TableColumn key={column.key}>{column.label}</TableColumn>
                   )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-
-          <Table isStriped selectionMode="single" aria-label="OrderBook">
-            <TableHeader columns={columnsBook}>
-              {(column) => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              )}
-            </TableHeader>
-            <TableBody items={bids}>
-              {(item) => (
-                <TableRow key={priceData(item.key)}>
-                  {(columnKey) => (
-                    <TableCell>
-                      {columnKey == "owner"
-                        ? getKeyValue(item, columnKey)
-                            .toString()
-                            .substring(0, 4) +
-                          ".." +
-                          getKeyValue(item, columnKey).toString().slice(-4)
-                        : columnKey == "quantity"
-                        ? getKeyValue(item, columnKey).toString()
-                        : priceDataToUI(item.key)}
-                    </TableCell>
+                </TableHeader>
+                <TableBody items={asks}>
+                  {(item) => (
+                    <TableRow key={priceData(item.key)}>
+                      {(columnKey) => (
+                        <TableCell>
+                          {columnKey == "owner"
+                            ? getKeyValue(item, columnKey)
+                                .toString()
+                                .substring(0, 4) +
+                              ".." +
+                              getKeyValue(item, columnKey).toString().slice(-4)
+                            : columnKey == "quantity"
+                            ? getKeyValue(item, columnKey).toString()
+                            : priceDataToUI(item.key)}
+                        </TableCell>
+                      )}
+                    </TableRow>
                   )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                </TableBody>
+              </Table>
+
+              <Table isStriped selectionMode="single" aria-label="OrderBook">
+                <TableHeader columns={columnsBook}>
+                  {(column) => (
+                    <TableColumn key={column.key}>{column.label}</TableColumn>
+                  )}
+                </TableHeader>
+                <TableBody items={bids}>
+                  {(item) => (
+                    <TableRow key={priceData(item.key)}>
+                      {(columnKey) => (
+                        <TableCell>
+                          {columnKey == "owner"
+                            ? getKeyValue(item, columnKey)
+                                .toString()
+                                .substring(0, 4) +
+                              ".." +
+                              getKeyValue(item, columnKey).toString().slice(-4)
+                            : columnKey == "quantity"
+                            ? getKeyValue(item, columnKey).toString()
+                            : priceDataToUI(item.key)}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        ) : (
+          <h1 className="text-center">This market has been closed!</h1>
+        )}
 
         <footer className="bg-white rounded-lg shadow m-4 dark:bg-gray-800">
           <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">

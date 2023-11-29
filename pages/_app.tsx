@@ -11,24 +11,19 @@ import dynamic from "next/dynamic";
 import { ConnectionProvider } from "@solana/wallet-adapter-react";
 import ClientWalletProvider from "../components/ClientWalletProvider";
 
-export const SOLANA_MAIN = clusterApiUrl(WalletAdapterNetwork.Mainnet);
-export const SOLANA_TEST = clusterApiUrl(WalletAdapterNetwork.Testnet);
-export const SOLANA_DEV = clusterApiUrl(WalletAdapterNetwork.Devnet);
-export const HELIUS = `https://misty-wcb8ol-fast-mainnet.helius-rpc.com/`;
 import { Toaster } from "react-hot-toast";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 // You can use any of the other enpoints here
-export const NETWORK = HELIUS;
-
+export const NETWORK = RPC;
 
 import type { AppProps } from "next/app";
 import { Inter } from "next/font/google";
 
 import ActiveLink from "../components/ActiveLink";
+import { RPC } from "../utils/openbook";
 
 const inter = Inter({ subsets: ["latin"] });
-
 
 export default function App({ Component, pageProps }: AppProps) {
   const network = WalletAdapterNetwork.Mainnet;
@@ -46,7 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ConnectionProvider endpoint={NETWORK}>
       <ClientWalletProvider wallets={wallets}>
         <ReactUIWalletModalProviderDynamic>
-          <Toaster position="bottom-right" reverseOrder={true} />
+          <Toaster position="bottom-left" reverseOrder={true} />
 
           <div className={`${inter.className} dark`}>
             <WalletMultiButton className="btn" />

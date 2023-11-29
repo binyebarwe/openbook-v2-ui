@@ -12,7 +12,10 @@ import {
   useFakeProvider,
 } from "../hooks/useOpenbookClient";
 
+// MAINNET
 export const RPC = "https://misty-wcb8ol-fast-mainnet.helius-rpc.com/";
+// DEVNET
+// export const RPC = "https://aimil-f4d13p-fast-devnet.helius-rpc.com/";
 
 export const fetchData = async () => {
   const connection = useHookConnection();

